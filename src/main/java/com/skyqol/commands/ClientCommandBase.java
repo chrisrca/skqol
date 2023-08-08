@@ -10,12 +10,10 @@ public abstract class ClientCommandBase extends CommandBase {
 		this.name = name;
 	}
 
-	@Override
 	public String getCommandName() {
 		return name;
 	}
 
-	@Override
 	public String getCommandUsage(ICommandSender sender) {
 		return "/" + name;
 	}

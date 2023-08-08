@@ -11,7 +11,6 @@ public class SettingsCommand extends ClientCommandBase {
 		super("skyqol");
 	}
 
-	@Override
 	public void processCommand(ICommandSender sender, String[] args) throws CommandException {
 		Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("Settings!"));
 	}
