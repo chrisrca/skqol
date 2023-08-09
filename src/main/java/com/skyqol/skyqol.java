@@ -73,41 +73,4 @@ public class skyqol
 			currChatMessage = message;
 		}
 	}
-    
-    //Open the custom chest GUI on the client side
-    //Minecraft.getMinecraft().displayGuiScreen(new CustomChestGui());
-    
-//    // Custom GUI screen with a grid of 6x9 slots
-//    private static class CustomChestGui extends GuiContainer {
-//    	private static final ResourceLocation CHEST_GUI_TEXTURE = new ResourceLocation("textures/gui/container/generic_54.png");
-//        private static final int GUI_WIDTH = 176; // Change to the desired width
-//        private static final int GUI_HEIGHT = 222; // Change to the desired height
-//        
-//        public CustomChestGui() {
-//            super(new ContainerEmpty());
-//            xSize = GUI_WIDTH;
-//            ySize = GUI_HEIGHT;
-//        }
-//
-//        @Override
-//        protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
-//            Minecraft.getMinecraft().getTextureManager().bindTexture(CHEST_GUI_TEXTURE);
-//            GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-//            drawTexturedModalRect(guiLeft, guiTop, 0, 0, xSize, ySize);
-//            System.out.println(CHEST_GUI_TEXTURE);
-//        }
-//
-//        @Override
-//        protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
-//            // Draw your custom GUI foreground here
-//        }
-//    }
-//
-//    // Dummy container class for the custom GUI
-//    private static class ContainerEmpty extends net.minecraft.inventory.Container {
-//        @Override
-//        public boolean canInteractWith(EntityPlayer playerIn) {
-//            return true;
-//        }
-//    }
 }
