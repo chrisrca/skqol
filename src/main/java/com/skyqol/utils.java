@@ -1,5 +1,12 @@
 package com.skyqol;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.inventory.GuiChest;
+import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.renderer.entity.RenderItem;
+import net.minecraft.item.ItemStack;
+import net.minecraftforge.client.event.GuiScreenEvent.DrawScreenEvent.Post;
+
 public class utils {
 	public static String cleanDuplicateColourCodes(String line) {
 		StringBuilder sb = new StringBuilder();
@@ -28,5 +35,18 @@ public class utils {
 
 	public static String cleanColour(String in) {
 		return in.replaceAll("(?i)\\u00A7.", "");
+	}
+	
+	public static void drawItemStack(Post event, GuiChest chest, ItemStack stack, int x, int y) {
+        Minecraft mc = Minecraft.getMinecraft();
+        RenderItem itemRender = mc.getRenderItem();
+        
+        // Draw the fake item
+        RenderHelper.enableGUIStandardItemLighting();
+        itemRender.renderItemAndEffectIntoGUI(stack, x, y);
+        RenderHelper.disableStandardItemLighting();
+        
+        // Allow the default item rendering to handle tooltips
+        chest.drawScreen(event.mouseX, event.mouseY, event.renderPartialTicks);
 	}
 }
