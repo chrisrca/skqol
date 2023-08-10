@@ -71,7 +71,7 @@ public class GuiOpenListener {
 	
 	@SubscribeEvent
 	public void onGuiBackgroundDrawn(GuiScreenEvent.DrawScreenEvent.Post event) {
-		if (event.gui instanceof GuiContainer && event.gui != null) {
+		if (event.gui instanceof GuiChest && event.gui != null) {
 			GuiChest chest = (GuiChest) event.gui;
 
 			utils.drawItemStack(event, chest, new ItemStack(Item.getItemFromBlock(Blocks.stained_glass_pane), 1, 5), 240, 87);
