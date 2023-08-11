@@ -1,11 +1,18 @@
 package com.skyqol;
 
+import org.lwjgl.opengl.GL11;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiChest;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.entity.RenderItem;
+import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.client.event.GuiScreenEvent.DrawScreenEvent;
 import net.minecraftforge.client.event.GuiScreenEvent.DrawScreenEvent.Post;
+import net.minecraftforge.client.event.GuiScreenEvent.DrawScreenEvent.Pre;
 
 public class utils {
 	public static String cleanDuplicateColourCodes(String line) {
@@ -37,16 +44,15 @@ public class utils {
 		return in.replaceAll("(?i)\\u00A7.", "");
 	}
 	
-	public static void drawItemStack(Post event, GuiChest chest, ItemStack stack, int x, int y) {
+	private static final ResourceLocation BACKGROUND_TEXTURE = new ResourceLocation("minecraft", "textures/gui/container/generic_54.png");
+	
+	public static void drawItemStack(DrawScreenEvent event, GuiChest chest, ItemStack stack, Slot slot, int x, int y) {
         Minecraft mc = Minecraft.getMinecraft();
         RenderItem itemRender = mc.getRenderItem();
-        
-        // Draw the fake item
-        RenderHelper.enableGUIStandardItemLighting();
-        itemRender.renderItemAndEffectIntoGUI(stack, x, y);
         RenderHelper.disableStandardItemLighting();
-        
-        // Allow the default item rendering to handle tooltips
-        chest.drawScreen(event.mouseX, event.mouseY, event.renderPartialTicks);
+        mc.getTextureManager().bindTexture(BACKGROUND_TEXTURE);
+        chest.drawTexturedModalRect(x, y, 8, 18, 16, 16); 
+        itemRender.renderItemAndEffectIntoGUI(stack, x, y);
+        RenderHelper.enableGUIStandardItemLighting();
 	}
 }

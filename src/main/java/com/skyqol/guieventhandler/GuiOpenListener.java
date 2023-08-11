@@ -15,6 +15,7 @@ import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
+import net.minecraft.inventory.Container;
 import net.minecraft.inventory.ContainerChest;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -66,25 +67,63 @@ import java.util.List;
 import com.skyqol.utils;
 
 public class GuiOpenListener {
-	
-	private static final ResourceLocation STAINED_GLASS_TEXTURE = new ResourceLocation("minecraft", "textures/blocks/glass_lime.png");
-	
-	@SubscribeEvent
-	public void onGuiBackgroundDrawn(GuiScreenEvent.DrawScreenEvent.Post event) {
+			
+	@SubscribeEvent(priority = EventPriority.LOW)
+	public void onItemTooltip(GuiScreenEvent.DrawScreenEvent.Pre event) {
 		if (event.gui instanceof GuiChest && event.gui != null) {
 			GuiChest chest = (GuiChest) event.gui;
-
-			utils.drawItemStack(event, chest, new ItemStack(Item.getItemFromBlock(Blocks.stained_glass_pane), 1, 5), 240, 87);
-			ItemStack fakeItemStack = new ItemStack(Item.getItemFromBlock(Blocks.stained_glass_pane), 1, 5);
-	    }
-    }
+	        Container container = chest.inventorySlots; // Get the container
+	        
+			if (container instanceof ContainerChest) {
+				ContainerChest chestContainer = (ContainerChest) container;
 				
+				Slot slot = chestContainer.getSlot(1);
+					
+				int x = 0; // X coordinate of the slot
+				int y = 0; // Y coordinate of the slot
+					
+					// Get the GUI scale factor
+				int scaleFactor = Minecraft.getMinecraft().gameSettings.guiScale;
+
+				// Non Fullscreen
+				if (Minecraft.getMinecraft().displayWidth == 854 && Minecraft.getMinecraft().displayHeight == 480) {
+					if (scaleFactor == 1) {
+						x += 339;
+						y += 129;
+					} else if (scaleFactor == 2 || scaleFactor == 3 || scaleFactor == 0) {
+						x += 125;
+						y += 9;
+					}
+				// Assumed 1920x1080 I don't have the braincells for widescreen res
+				} else if (Minecraft.getMinecraft().displayWidth == 1920 && Minecraft.getMinecraft().displayHeight == 1080) {
+					if (scaleFactor == 1) {
+						x += 872;
+						y += 429;
+					} else if (scaleFactor == 2) {
+						x += 392;
+						y += 159;
+					} else if (scaleFactor == 3) {
+						x += 232;
+						y += 69;
+					} else if (scaleFactor == 0){
+						x += 152;
+						y += 24;
+					}
+				} 
+				
+				utils.drawItemStack(event, chest, new ItemStack(Item.getItemFromBlock(Blocks.stained_glass_pane), 1, 5), slot, x + slot.xDisplayPosition, y + slot.yDisplayPosition);
+			}
+		}
+	}
+    
 	@SubscribeEvent
 	public void onGuiOpen(final GuiOpenEvent event) {
 		String currentGui;
 		// Check type of gui
-		if (event.gui == null) return;
-		else if (event.gui instanceof GuiChest) {
+		if (event.gui == null) {
+			return;
+		}
+		if (event.gui instanceof GuiChest) {
 			new Thread() {
 		         @Override
 		         public void run() {
