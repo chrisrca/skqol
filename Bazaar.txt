@@ -1,0 +1,99 @@
+For Category Selection Check if Farming's Lore Contains "Currently viewing!"
+
+1. Farming
+ Wheat & Seeds
+  - Wheat
+  - Enchanted Bread
+  - Hay Bale
+  - Enchanted Hay Bale
+  - Tightly-Tied Hay Bale
+  - Seeds
+  - Enchanted Seeds
+  - Box of Seeds
+ Carrot
+  - Carrot
+  - Enchanted Carrot
+  - Enchanted Carrot on a Stick
+  - Enchanted Golden Carrot
+ Potato
+  - Potato
+  - Poisonous Potato
+  - Enchanted Potato
+  - Enchanted Poisonous Potato
+  - Enchanted Baked Potato
+ Pumpkin
+  - Pumpkin
+  - Enchanted Pumpkin
+  - Polished Pumpkin
+ Melon
+  - Melon
+  - Enchanted Melon
+  - Enchanted Glistering Melon
+  - Melon Block
+  - Enchanted Melon Block
+ Mushrooms
+  - Red Mushroom
+  - Enchanted Red Mushroom
+  - Red Mushroom Block
+  - Enchanted Red Mushroom Block
+  - Brown Mushroom
+  - Enchanted Brown Mushroom
+  - Brown Mushroom Block
+  - Enchanted Brown Mushroom Block
+ Cocoa Beans
+  - Cocoa Beans
+  - Enchanted Cocoa Bean
+  - Enchanted Cookie
+ Cactus
+  - Cactus
+  - Enchanted Cactus Green
+  - Enchanted Cactus
+ Sugar Cane (Since Xalx Can Request Plain Sugar Highlight Sugar Cane for that)
+  - Sugar Cane
+  - Enchanted Sugar
+  - Enchanted Paper
+  - Enchanted Sugar Cane
+ Leather & Beef
+  - Leather
+  - Enchanted Leather
+  - Raw Beef
+  - Enchanted Raw Beef
+ Pork
+  - Raw Porkchop
+  - Enchanted Pork
+  - Enchanted Grilled Pork
+ Chicken & Feather
+  - Raw Chicken
+  - Enchanted Raw Chicken
+  - Enchanted Cake
+  - Feather
+  - Enchanted Feather
+  - Enchanted Egg
+  - Super Enchanted Egg
+  - Omega Enchanted Egg
+ Mutton & Wool
+  - Mutton
+  - Enchanted Mutton
+  - Enchanted Cooked Mutton
+  - White Wool
+  - Enchanted Wool
+ Rabbit
+  - Raw Rabbit
+  - Rabbit's Foot
+  - Rabbit Hide
+  - Enchanted Raw Rabbit
+  - Enchanted Rabbit Foot
+  - Enchanted Rabbit Hide
+ Nether Warts
+  - Nether Wart
+  - Enchanted Nether Wart
+  - Mutant Nether Wart
+ Garden
+  - Compost
+  - Compost Bundle
+  - Cropie
+  - Squash
+  - Fermento
+  - Condensed Fermento
+
+ 
