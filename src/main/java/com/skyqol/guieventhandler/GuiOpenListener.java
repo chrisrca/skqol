@@ -73,44 +73,21 @@ public class GuiOpenListener {
 		if (event.gui instanceof GuiChest && event.gui != null) {
 			GuiChest chest = (GuiChest) event.gui;
 	        Container container = chest.inventorySlots; // Get the container
-	        
+	                    
 			if (container instanceof ContainerChest) {
 				ContainerChest chestContainer = (ContainerChest) container;
 				
-				Slot slot = chestContainer.getSlot(1);
-					
-				int x = 0; // X coordinate of the slot
-				int y = 0; // Y coordinate of the slot
-					
-					// Get the GUI scale factor
-				int scaleFactor = Minecraft.getMinecraft().gameSettings.guiScale;
-
-				// Non Fullscreen
-				if (Minecraft.getMinecraft().displayWidth == 854 && Minecraft.getMinecraft().displayHeight == 480) {
-					if (scaleFactor == 1) {
-						x += 339;
-						y += 129;
-					} else if (scaleFactor == 2 || scaleFactor == 3 || scaleFactor == 0) {
-						x += 125;
-						y += 9;
-					}
-				// Assumed 1920x1080 I don't have the braincells for widescreen res
-				} else if (Minecraft.getMinecraft().displayWidth == 1920 && Minecraft.getMinecraft().displayHeight == 1080) {
-					if (scaleFactor == 1) {
-						x += 872;
-						y += 429;
-					} else if (scaleFactor == 2) {
-						x += 392;
-						y += 159;
-					} else if (scaleFactor == 3) {
-						x += 232;
-						y += 69;
-					} else if (scaleFactor == 0){
-						x += 152;
-						y += 24;
-					}
-				} 
+				int x = (chest.width - 176) / 2;
+				int y = 0;
 				
+				if (((ContainerChest) container).getLowerChestInventory().getSizeInventory() / 9 == 6) {
+					y = (chest.height - 222) / 2; 				
+				} else {
+					y = (chest.height - 167) / 2; 
+				}
+		
+				Slot slot = chestContainer.getSlot(1);
+									
 				utils.drawItemStack(event, chest, new ItemStack(Item.getItemFromBlock(Blocks.stained_glass_pane), 1, 5), slot, x + slot.xDisplayPosition, y + slot.yDisplayPosition);
 			}
 		}
