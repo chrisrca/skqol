@@ -146,22 +146,8 @@ public class GuiOpenListener {
 			currentGui = container.getLowerChestInventory().getDisplayName().getUnformattedText();
 			System.out.println(currentGui);
 							
-			// Get right side scoreboard
-			Scoreboard scoreboard = Minecraft.getMinecraft().thePlayer.getWorldScoreboard();
-    		ScoreObjective sidebarObjective = scoreboard.getObjectiveInDisplaySlot(1);
-    		List<Score> scores = new ArrayList<>(scoreboard.getSortedScores(sidebarObjective));
-    		// Check each line using utils to format it to plaintext
-    		for (int i = scores.size() - 1; i >= 0; i--) {
-    			Score score = scores.get(i);
-    			ScorePlayerTeam scoreplayerteam1 = scoreboard.getPlayersTeam(score.getPlayerName());
-    			String line = ScorePlayerTeam.formatPlayerName(scoreplayerteam1, score.getPlayerName());
-    			line = utils.cleanDuplicateColourCodes(line);
-    			String cleanLine = utils.cleanColour(line);
-    			// Check region
-    			if (line.contains("The Garden")) {
-    				VisitorOffer.VisitorHelper(currentGui);
-    			} 
-    		}
+			Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(utils.getLocation()));
+						
 		} else {
 			currentGui = "";
 		}
