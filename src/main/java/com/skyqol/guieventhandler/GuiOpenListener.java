@@ -82,6 +82,10 @@ public class GuiOpenListener {
 				
 				if (((ContainerChest) container).getLowerChestInventory().getSizeInventory() / 9 == 6) {
 					y = (chest.height - 222) / 2; 				
+				} else if (((ContainerChest) container).getLowerChestInventory().getSizeInventory() / 9 == 5) {
+					y = (chest.height - 203) / 2; 
+				} else if (((ContainerChest) container).getLowerChestInventory().getSizeInventory() / 9 == 4) {
+					y = (chest.height - 185) / 2; 
 				} else {
 					y = (chest.height - 167) / 2; 
 				}
