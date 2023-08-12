@@ -15,6 +15,7 @@ import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.entity.RenderItem;
+import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.scoreboard.Score;
@@ -29,7 +30,7 @@ import net.minecraftforge.client.event.GuiScreenEvent.DrawScreenEvent.Post;
 import net.minecraftforge.client.event.GuiScreenEvent.DrawScreenEvent.Pre;
 
 public class utils {
-	public static String cleanDuplicateColourCodes(String line) {
+	public static String cleanDuplicateColors(String line) {
 		StringBuilder sb = new StringBuilder();
 		char currentColourCode = 'r';
 		boolean sectionSymbolLast = false;
@@ -54,7 +55,7 @@ public class utils {
 		return sb.toString();
 	}
 
-	public static String cleanColour(String in) {
+	public static String cleanColor(String in) {
 		return in.replaceAll("(?i)\\u00A7.", "");
 	}
 	
@@ -82,11 +83,30 @@ public class utils {
 
 			if (line.contains(String.valueOf("\u23E3"))) {
 				line = line.replace("\u23E3", "").trim();
-				line = cleanColour(line);
+				line = cleanDuplicateColors(line);
+				line = cleanColor(line);
 				line = line.replaceAll("^\\s+|\\s+$|\\p{C}", "");
 				return line;
 			} 
 		}
 		return "None";
+	}
+
+	public static int getGuiWidth(ContainerChest container, GuiChest chest) {
+		return (chest.width - 176) / 2;
+	}
+	
+	public static int getGuiHeight(ContainerChest container, GuiChest chest) {
+		int y = 0;
+		if (((ContainerChest) container).getLowerChestInventory().getSizeInventory() / 9 == 6) {
+			y = (chest.height - 222) / 2; 				
+		} else if (((ContainerChest) container).getLowerChestInventory().getSizeInventory() / 9 == 5) {
+			y = (chest.height - 203) / 2; 
+		} else if (((ContainerChest) container).getLowerChestInventory().getSizeInventory() / 9 == 4) {
+			y = (chest.height - 185) / 2; 
+		} else {
+			y = (chest.height - 167) / 2; 
+		}
+		return y;
 	}
 }
