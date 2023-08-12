@@ -1,5 +1,8 @@
 package com.skyqol.guieventhandler;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -62,6 +65,7 @@ import org.lwjgl.opengl.GL11;
 import com.skyqol.guieventhandler.*;
 
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 import com.skyqol.utils;
@@ -71,27 +75,15 @@ public class GuiOpenListener {
 	@SubscribeEvent(priority = EventPriority.LOW)
 	public void onItemTooltip(GuiScreenEvent.DrawScreenEvent.Pre event) {
 		if (event.gui instanceof GuiChest && event.gui != null) {
-			GuiChest chest = (GuiChest) event.gui;
-	        Container container = chest.inventorySlots; // Get the container
-	                    
+			GuiChest chest = (GuiChest) event.gui; // Get the GuiChest
+	        Container container = chest.inventorySlots; // Get the Container
 			if (container instanceof ContainerChest) {
 				ContainerChest chestContainer = (ContainerChest) container;
-				
-				int x = (chest.width - 176) / 2;
-				int y = 0;
-				
-				if (((ContainerChest) container).getLowerChestInventory().getSizeInventory() / 9 == 6) {
-					y = (chest.height - 222) / 2; 				
-				} else if (((ContainerChest) container).getLowerChestInventory().getSizeInventory() / 9 == 5) {
-					y = (chest.height - 203) / 2; 
-				} else if (((ContainerChest) container).getLowerChestInventory().getSizeInventory() / 9 == 4) {
-					y = (chest.height - 185) / 2; 
-				} else {
-					y = (chest.height - 167) / 2; 
-				}
+				 // Get Gui Width and Height (This is necessary for rendering items in right locations with any scale game)
+				int x = utils.getGuiWidth(chestContainer, chest);
+				int y = utils.getGuiHeight(chestContainer, chest);
 		
-				Slot slot = chestContainer.getSlot(1);
-									
+				Slot slot = chestContainer.getSlot(1);						
 				utils.drawItemStack(event, chest, new ItemStack(Item.getItemFromBlock(Blocks.stained_glass_pane), 1, 5), slot, x + slot.xDisplayPosition, y + slot.yDisplayPosition);
 			}
 		}
@@ -100,60 +92,23 @@ public class GuiOpenListener {
 	@SubscribeEvent
 	public void onGuiOpen(final GuiOpenEvent event) {
 		String currentGui;
-		// Check type of gui
-		if (event.gui == null) {
-			return;
-		}
+		if (event.gui == null) return;
 		if (event.gui instanceof GuiChest) {
 			new Thread() {
-		         @Override
-		         public void run() {
-		            try {
-		               Thread.sleep(10);
-		               IInventory chestInventory = ((ContainerChest) ((GuiChest) event.gui).inventorySlots).getLowerChestInventory();
-		               ItemStack itemStack = chestInventory.getStackInSlot(29);
-		               if (itemStack != null && itemStack.stackSize > 0) {
-		   			    // Get the Item from the ItemStack
-		   			    Item item = itemStack.getItem();
-		   			    
-		   			    List<String> tooltipLines = itemStack.getTooltip(null, false);
-
-		   			    for (int i = 0; i < tooltipLines.size(); i++) {
-		   			    	if (i > 0 && utils.cleanColour(utils.cleanDuplicateColourCodes(tooltipLines.get(i-1))).contains("Items Required")) {
-		   			    		String line = tooltipLines.get(i);
-		   			    		Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(line));
-		   			    		break;
-		   			    	}
-		   			    }
-		   			    // Get the registry name of the Item
-		   			    ResourceLocation itemRegistryName = Item.itemRegistry.getNameForObject(item);
-
-		   			    // Get the full resource location string
-		   			    String itemName = itemRegistryName.toString();
-
-		   			    // Print the item name
-		   			    System.out.println("Item Name: " + itemName);
-		   			} else {
-		   			    System.out.println("Slot is empty");
-		   			}
-		               
-		            } catch (InterruptedException e) {
-		               e.printStackTrace();
-		            }
+		        @Override
+		        public void run() {
+		        	try {
+		        		Thread.sleep(10);
+		        		GuiChest chest = (GuiChest) event.gui;
+						ContainerChest container = (ContainerChest) chest.inventorySlots;
+						if ((utils.getLocation()).contains("The Garden")) { 
+							VisitorOffer.addRequest(event, container, chest);
+						}
+		        	} catch (InterruptedException e) {
+		        		e.printStackTrace();
+		        	}
 		         }
-		      }.start();
-		      
-			// Save current gui
-			GuiChest chest = (GuiChest) event.gui;
-			ContainerChest container = (ContainerChest) chest.inventorySlots;
-			// Get name of current gui
-			currentGui = container.getLowerChestInventory().getDisplayName().getUnformattedText();
-			System.out.println(currentGui);
-							
-			Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(utils.getLocation()));
-						
-		} else {
-			currentGui = "";
+			}.start();						
 		}
 	}
 }
