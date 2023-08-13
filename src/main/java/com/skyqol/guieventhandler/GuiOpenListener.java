@@ -85,7 +85,7 @@ public class GuiOpenListener {
 				int y = utils.getGuiHeight(chestContainer, chest);
 				
 				Slot slot = chestContainer.getSlot(1);						
-				utils.drawItemStack(event, chest, new ItemStack(Item.getItemFromBlock(Blocks.stained_glass_pane), 1, 5), slot, x + slot.xDisplayPosition, y + slot.yDisplayPosition);
+				utils.drawItemStack(chest, new ItemStack(Item.getItemFromBlock(Blocks.stained_glass_pane), 1, 5), slot, x + slot.xDisplayPosition, y + slot.yDisplayPosition);
 			}
 		}
 	}
@@ -101,9 +101,19 @@ public class GuiOpenListener {
 				 // Get Gui Width and Height (This is necessary for rendering items in right locations with any scale game)
 				int x = utils.getGuiWidth(chestContainer, chest);
 				int y = utils.getGuiHeight(chestContainer, chest);
+				Slot slot = chestContainer.getSlot(8);	
 				
-				Slot slot = chestContainer.getSlot(8);		
-				utils.drawEffectBackground(event, chest, (int) (x + slot.xDisplayPosition + (slot.xDisplayPosition / 9) * 1.8), y);
+				int offset = 0;
+				LinkedList<LinkedList<String>> visitorList = Visitor.getVisitorList();
+				for (LinkedList<String> visitor : visitorList) {
+					utils.drawVisitorBackground(chest, (int) (x + slot.xDisplayPosition + (slot.xDisplayPosition / 9) * 1.8), y, offset, visitor.getFirst(), visitor.get(1), visitor.getLast(), event.getMouseX(), event.getMouseY());
+					offset++;
+				}	
+				offset = 0;
+				for (LinkedList<String> visitor : visitorList) {
+					utils.drawTooltips(chest, (int) (x + slot.xDisplayPosition + (slot.xDisplayPosition / 9) * 1.8), y, offset, visitor.getFirst(), visitor.get(1), visitor.getLast(), event.getMouseX(), event.getMouseY());
+					offset++;
+				}	
 			}
 		}
 	}
