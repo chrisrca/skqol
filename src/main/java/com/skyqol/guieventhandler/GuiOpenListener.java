@@ -65,6 +65,7 @@ import org.lwjgl.opengl.GL11;
 import com.skyqol.guieventhandler.*;
 
 import java.util.Collections;
+import java.util.ConcurrentModificationException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -90,7 +91,7 @@ public class GuiOpenListener {
 		}
 	}
 	
-	@SubscribeEvent
+	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void drawGuiContainerForegroundLayer(GuiScreenEvent.BackgroundDrawnEvent event) {
 		if (event.gui instanceof GuiChest && event.gui != null) {
 			GuiChest chest = (GuiChest) event.gui; // Get the GuiChest
@@ -101,19 +102,30 @@ public class GuiOpenListener {
 				 // Get Gui Width and Height (This is necessary for rendering items in right locations with any scale game)
 				int x = utils.getGuiWidth(chestContainer, chest);
 				int y = utils.getGuiHeight(chestContainer, chest);
-				Slot slot = chestContainer.getSlot(8);	
-				
+				Slot slot = chestContainer.getSlot(8);		
 				int offset = 0;
-				LinkedList<LinkedList<String>> visitorList = Visitor.getVisitorList();
-				for (LinkedList<String> visitor : visitorList) {
-					utils.drawVisitorBackground(chest, (int) (x + slot.xDisplayPosition + (slot.xDisplayPosition / 9) * 1.8), y, offset, visitor.getFirst(), visitor.get(1), visitor.getLast(), event.getMouseX(), event.getMouseY());
-					offset++;
-				}	
-				offset = 0;
-				for (LinkedList<String> visitor : visitorList) {
-					utils.drawTooltips(chest, (int) (x + slot.xDisplayPosition + (slot.xDisplayPosition / 9) * 1.8), y, offset, visitor.getFirst(), visitor.get(1), visitor.getLast(), event.getMouseX(), event.getMouseY());
-					offset++;
-				}	
+				try {
+					RenderHelper.disableStandardItemLighting();
+					LinkedList<LinkedList<String>> visitorList = Visitor.getVisitorList();
+					for (LinkedList<String> visitor : visitorList) {
+						Visitor.drawVisitorBackground(chest, (int) (x + slot.xDisplayPosition + (slot.xDisplayPosition / 9) * 1.8), y, offset, visitor.getFirst(), visitor.get(1), visitor.getLast(), event.getMouseX(), event.getMouseY());
+						offset++;
+					}	
+					offset = 0;
+					for (LinkedList<String> visitor : visitorList) {
+						Visitor.drawText(chest, (int) (x + slot.xDisplayPosition + (slot.xDisplayPosition / 9) * 1.8), y, offset, visitor.getFirst(), visitor.get(1), visitor.getLast(), event.getMouseX(), event.getMouseY());
+						offset++;
+					}	
+					offset = 0;
+					for (LinkedList<String> visitor : visitorList) {
+						Visitor.drawTooltips(chest, (int) (x + slot.xDisplayPosition + (slot.xDisplayPosition / 9) * 1.8), y, offset, visitor.getFirst(), visitor.get(1), visitor.getLast(), event.getMouseX(), event.getMouseY());
+						offset++;
+					}	
+			        RenderHelper.enableGUIStandardItemLighting();
+				} catch (ConcurrentModificationException e) { // Just in case the list is still being written to
+					utils.log("that error happened :/");
+					return;
+				}
 			}
 		}
 	}
