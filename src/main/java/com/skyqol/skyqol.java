@@ -12,6 +12,7 @@ import net.minecraftforge.fml.common.Mod.Instance;
 
 import java.awt.Container;
 
+import com.skyqol.chateventhandler.ChatEventListener;
 import com.skyqol.commands.Commands;
 import com.skyqol.guieventhandler.GuiOpenListener;
 import com.skyqol.worldeventhandler.WorldListener;
@@ -54,6 +55,7 @@ public class skyqol
     	//MinecraftForge.EVENT_BUS.register(new ChatListener(this));
     	MinecraftForge.EVENT_BUS.register(new GuiOpenListener());
     	MinecraftForge.EVENT_BUS.register(new WorldListener());
+    	MinecraftForge.EVENT_BUS.register(new ChatEventListener());
     	this.commands = new Commands();
     }
 

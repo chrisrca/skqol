@@ -77,14 +77,33 @@ public class GuiOpenListener {
 		if (event.gui instanceof GuiChest && event.gui != null) {
 			GuiChest chest = (GuiChest) event.gui; // Get the GuiChest
 	        Container container = chest.inventorySlots; // Get the Container
+	        
 			if (container instanceof ContainerChest) {
 				ContainerChest chestContainer = (ContainerChest) container;
 				 // Get Gui Width and Height (This is necessary for rendering items in right locations with any scale game)
 				int x = utils.getGuiWidth(chestContainer, chest);
 				int y = utils.getGuiHeight(chestContainer, chest);
-		
+				
 				Slot slot = chestContainer.getSlot(1);						
 				utils.drawItemStack(event, chest, new ItemStack(Item.getItemFromBlock(Blocks.stained_glass_pane), 1, 5), slot, x + slot.xDisplayPosition, y + slot.yDisplayPosition);
+			}
+		}
+	}
+	
+	@SubscribeEvent
+	public void drawGuiContainerForegroundLayer(GuiScreenEvent.BackgroundDrawnEvent event) {
+		if (event.gui instanceof GuiChest && event.gui != null) {
+			GuiChest chest = (GuiChest) event.gui; // Get the GuiChest
+	        Container container = chest.inventorySlots; // Get the Container
+	        
+			if (container instanceof ContainerChest) {
+				ContainerChest chestContainer = (ContainerChest) container;
+				 // Get Gui Width and Height (This is necessary for rendering items in right locations with any scale game)
+				int x = utils.getGuiWidth(chestContainer, chest);
+				int y = utils.getGuiHeight(chestContainer, chest);
+				
+				Slot slot = chestContainer.getSlot(8);		
+				utils.drawEffectBackground(event, chest, (int) (x + slot.xDisplayPosition + (slot.xDisplayPosition / 9) * 1.8), y);
 			}
 		}
 	}
@@ -92,7 +111,9 @@ public class GuiOpenListener {
 	@SubscribeEvent
 	public void onGuiOpen(final GuiOpenEvent event) {
 		String currentGui;
-		if (event.gui == null) return;
+		if (event.gui == null) {
+			return;
+		} 
 		if (event.gui instanceof GuiChest) {
 			new Thread() {
 		        @Override
@@ -102,7 +123,13 @@ public class GuiOpenListener {
 		        		GuiChest chest = (GuiChest) event.gui;
 						ContainerChest container = (ContainerChest) chest.inventorySlots;
 						if ((utils.getLocation()).contains("The Garden")) { 
-							VisitorOffer.addRequest(event, container, chest);
+							if (!Visitor.addVisitor(event, container, chest)) {
+								LinkedList<LinkedList<String>> visitorList = Visitor.getVisitorList();
+//								for (LinkedList<String> visitor : visitorList) {
+//									utils.log(" " + visitor.getFirst());
+//							    }
+								
+							}
 						}
 		        	} catch (InterruptedException e) {
 		        		e.printStackTrace();

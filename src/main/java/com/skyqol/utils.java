@@ -4,13 +4,16 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.lwjgl.opengl.GL11;
 
-import com.skyqol.guieventhandler.VisitorOffer;
+import com.skyqol.guieventhandler.Visitor;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiOverlayDebug;
+import net.minecraft.client.gui.GuiPlayerTabOverlay;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
@@ -22,9 +25,12 @@ import net.minecraft.scoreboard.Score;
 import net.minecraft.scoreboard.ScoreObjective;
 import net.minecraft.scoreboard.ScorePlayerTeam;
 import net.minecraft.scoreboard.Scoreboard;
+import net.minecraft.scoreboard.Team;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.IChatComponent;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.client.event.GuiScreenEvent.BackgroundDrawnEvent;
 import net.minecraftforge.client.event.GuiScreenEvent.DrawScreenEvent;
 import net.minecraftforge.client.event.GuiScreenEvent.DrawScreenEvent.Post;
 import net.minecraftforge.client.event.GuiScreenEvent.DrawScreenEvent.Pre;
@@ -60,8 +66,19 @@ public class utils {
 	}
 	
 	private static final ResourceLocation BACKGROUND_TEXTURE = new ResourceLocation("minecraft", "textures/gui/container/generic_54.png");
+	private static final ResourceLocation INVENTORY_TEXTURE = new ResourceLocation("minecraft", "textures/gui/container/inventory.png");
 	
-	public static void drawItemStack(DrawScreenEvent event, GuiChest chest, ItemStack stack, Slot slot, int x, int y) {
+	public static void drawEffectBackground(GuiChest chest, int x, int y, int offset) {
+		offset *= 33;
+        RenderHelper.disableStandardItemLighting();
+        Minecraft.getMinecraft().getTextureManager().bindTexture(INVENTORY_TEXTURE);
+        chest.drawTexturedModalRect(x, y + offset, 0, 166, 120, 32); 
+        Minecraft.getMinecraft().fontRendererObj.drawString("test", x+11, y+13, 0x3f3f3f);
+        Minecraft.getMinecraft().fontRendererObj.drawString("test", x+10, y+12, 0xFFFFFF);
+        RenderHelper.enableGUIStandardItemLighting();
+	}	
+	
+	public static void drawItemStack(GuiChest chest, ItemStack stack, Slot slot, int x, int y) {
         Minecraft mc = Minecraft.getMinecraft();
         RenderItem itemRender = mc.getRenderItem();
         RenderHelper.disableStandardItemLighting();
@@ -109,4 +126,29 @@ public class utils {
 		}
 		return y;
 	}
+	
+	public static void log(String str) {
+		Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("" + str));
+	}
+	
+//	public static void getTabList() {
+//		GuiPlayerTabOverlay tabOverlay  = Minecraft.getMinecraft().ingameGUI.getTabList();
+//        Scoreboard scoreboard = Minecraft.getMinecraft().theWorld.getScoreboard();
+//        Collection<ScorePlayerTeam> teams = scoreboard.getTeams();
+//
+//        for (ScorePlayerTeam team : teams) {
+//        	utils.log(team.getRegisteredName());
+//            Team.EnumVisible visibility = team.getNameTagVisibility();
+//            if (visibility == Team.EnumVisible.ALWAYS || visibility == Team.EnumVisible.HIDE_FOR_OTHER_TEAMS) {
+//                Collection<String> players = team.getMembershipCollection();
+//                for (String playerName : players) {
+//                    ChatComponentText playerNameComponent = new ChatComponentText(playerName);
+//                    String playerNameFormatted = playerNameComponent.getFormattedText();
+//                    String teamPrefix = EnumChatFormatting.getTextWithoutFormattingCodes(team.getColorPrefix());
+//                    String formattedPlayerInfo = teamPrefix + playerNameFormatted;
+//                    utils.log(formattedPlayerInfo);
+//                }
+//            }
+//        }
+//	}
 }
