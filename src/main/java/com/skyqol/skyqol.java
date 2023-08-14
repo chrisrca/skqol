@@ -15,6 +15,7 @@ import java.awt.Container;
 import com.skyqol.chateventhandler.ChatEventListener;
 import com.skyqol.commands.Commands;
 import com.skyqol.guieventhandler.GuiOpenListener;
+import com.skyqol.guieventhandler.MouseListener;
 import com.skyqol.guieventhandler.SignOpenListener;
 import com.skyqol.worldeventhandler.WorldListener;
 
@@ -46,9 +47,9 @@ public class skyqol
     public static skyqol instance;
 
     public Commands commands;
-	private long lastChatMessage = 0;
-	private long secondLastChatMessage = 0;
-	private String currChatMessage = null;
+	private static long lastChatMessage = 0;
+	private static long secondLastChatMessage = 0;
+	private static String currChatMessage = null;
     
     @EventHandler
     public void preinit(FMLInitializationEvent event)
@@ -58,6 +59,8 @@ public class skyqol
     	MinecraftForge.EVENT_BUS.register(new WorldListener());
     	MinecraftForge.EVENT_BUS.register(new ChatEventListener());
     	MinecraftForge.EVENT_BUS.register(new SignOpenListener());
+    	MinecraftForge.EVENT_BUS.register(new MouseListener());
+    	
     	this.commands = new Commands();
     }
 
@@ -67,7 +70,7 @@ public class skyqol
 		}
 	}
     
-    public void sendChatMessage(String message) {
+    public static void sendChatMessage(String message) {
 		if (System.currentTimeMillis() - lastChatMessage > CHAT_MSG_COOLDOWN) {
 			secondLastChatMessage = lastChatMessage;
 			lastChatMessage = System.currentTimeMillis();

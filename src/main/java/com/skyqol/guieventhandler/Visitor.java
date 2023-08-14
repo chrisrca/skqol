@@ -12,15 +12,20 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.skyqol.skyqol;
 import com.skyqol.utils;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.entity.RenderItem;
+import net.minecraft.command.ICommandSender;
+import net.minecraft.command.ServerCommandManager;
 import net.minecraft.enchantment.Enchantment;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.Container;
@@ -29,6 +34,7 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
@@ -277,7 +283,7 @@ public class Visitor {
 	private static boolean isMouseOver(int itemX, int itemY, int mouseX, int mouseY) {
 	    return mouseX >= itemX && mouseX <= itemX + 16 && mouseY >= itemY && mouseY <= itemY + 16;
 	}
-
+	
 	private static void drawHoveringText(List<String> textLines, int x, int y) {
 	    Minecraft mc = Minecraft.getMinecraft();
 	    GuiUtils.drawHoveringText(textLines, x, y, mc.displayWidth, mc.displayHeight, -1, mc.fontRendererObj);
@@ -380,4 +386,27 @@ public class Visitor {
 		}.start();		
 		
 	}	
+	
+	public static void mouseInput(GuiChest chest, int x, int y, int offset, String name, String request, String file, int mouseX, int mouseY) {
+		offset *= 33;
+		
+        String requestRaw = utils.cleanColor(utils.cleanDuplicateColors(request));
+
+        Pattern pattern = Pattern.compile("x[0-9]+$");
+        Matcher matcher = pattern.matcher(requestRaw);
+        if (matcher.find()) {
+        	requestRaw = requestRaw.substring(1, matcher.start() - 1);
+        } else {
+        	requestRaw = requestRaw.substring(1);
+        }
+		
+		if (isMouseOver(x+27, y+11 + offset, mouseX, mouseY)) {
+			EntityPlayerSP player = Minecraft.getMinecraft().thePlayer;
+			if (requestRaw.length() > 18) {
+				requestRaw = requestRaw.substring(0, 18);
+			}
+			String command = "/bz " + requestRaw;
+			skyqol.sendChatMessage(command);
+        }
+	}
 }
