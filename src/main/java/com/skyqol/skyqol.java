@@ -15,6 +15,7 @@ import java.awt.Container;
 import com.skyqol.chateventhandler.ChatEventListener;
 import com.skyqol.commands.Commands;
 import com.skyqol.guieventhandler.GuiOpenListener;
+import com.skyqol.guieventhandler.SignOpenListener;
 import com.skyqol.worldeventhandler.WorldListener;
 
 import net.minecraft.client.Minecraft;
@@ -56,6 +57,7 @@ public class skyqol
     	MinecraftForge.EVENT_BUS.register(new GuiOpenListener());
     	MinecraftForge.EVENT_BUS.register(new WorldListener());
     	MinecraftForge.EVENT_BUS.register(new ChatEventListener());
+    	MinecraftForge.EVENT_BUS.register(new SignOpenListener());
     	this.commands = new Commands();
     }
 

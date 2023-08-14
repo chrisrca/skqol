@@ -4,6 +4,7 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -22,14 +23,17 @@ import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
+import net.minecraft.inventory.Container;
 import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.Slot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.GuiOpenEvent;
+import net.minecraftforge.client.event.GuiScreenEvent.BackgroundDrawnEvent;
 import net.minecraftforge.fml.client.config.GuiUtils;
 
 public class Visitor {
@@ -150,6 +154,10 @@ public class Visitor {
 		    	for (int i = 0; i < tooltipLines.size(); i++) {
 		    		if (i > 0 && utils.cleanColor(utils.cleanDuplicateColors(tooltipLines.get(i-1))).contains("Items Required")) {
 		    			String line = tooltipLines.get(i);
+		    			if (line.indexOf("(") > 0) {
+		    				line = line.substring(0, line.indexOf("("));
+		    				line = line.substring(0, line.lastIndexOf(' '));
+		    			}
 		    			return(line);
 		    		}
 		    	}
@@ -183,7 +191,7 @@ public class Visitor {
         	visitorInfo.add(offer);
             visitorInfo.add(offerParsed);
             visitorList.add(visitorInfo);
-            utils.log("Added New Visitor: " + visitor);
+            //utils.log("Added New Visitor: " + visitor);
         }
 		return false;
 	}
@@ -233,9 +241,13 @@ public class Visitor {
         } else {
         	RenderItem itemRender = Minecraft.getMinecraft().getRenderItem();
             ItemStack requestedItem = itemMappings.get(requestRaw);
+            
+            if (requestedItem == null) return;
+            
             if (requestRaw.contains("Enchanted")) {
                 requestedItem.addEnchantment(Enchantment.unbreaking, 1);
             }
+            
             RenderHelper.enableGUIStandardItemLighting();
             itemRender.renderItemAndEffectIntoGUI(requestedItem, x+30, y+12 + offset);
             RenderHelper.disableStandardItemLighting();
@@ -319,5 +331,53 @@ public class Visitor {
         drawScaledString(name, x+30, y+5 + offset, 0.75F, 0x3f3f3f);
         drawScaledString(requestAmount, x+48F, y+18F + offset, 0.75F, 0x151515);
         drawScaledString(requestAmount, x+47, y+17 + offset, 0.75F, 0x555555);
+	}
+
+	public static void displayRequests(BackgroundDrawnEvent event, GuiChest chest, Container container, ContainerChest chestContainer) {
+		int x = utils.getGuiWidth(chestContainer, chest);
+		int y = utils.getGuiHeight(chestContainer, chest);
+		Slot slot = chestContainer.getSlot(8);
+		
+		int offset = 0;
+		try {
+			RenderHelper.disableStandardItemLighting();
+			LinkedList<LinkedList<String>> visitorList = Visitor.getVisitorList();
+			for (LinkedList<String> visitor : visitorList) {
+				Visitor.drawVisitorBackground(chest, (int) (x + slot.xDisplayPosition + (slot.xDisplayPosition / 9) * 1.8), y, offset, visitor.getFirst(), visitor.get(1), visitor.getLast(), event.getMouseX(), event.getMouseY());
+				offset++;
+			}	
+			offset = 0;
+			for (LinkedList<String> visitor : visitorList) {
+				Visitor.drawText(chest, (int) (x + slot.xDisplayPosition + (slot.xDisplayPosition / 9) * 1.8), y, offset, visitor.getFirst(), visitor.get(1), visitor.getLast(), event.getMouseX(), event.getMouseY());
+				offset++;
+			}	
+			offset = 0;
+			for (LinkedList<String> visitor : visitorList) {
+				Visitor.drawTooltips(chest, (int) (x + slot.xDisplayPosition + (slot.xDisplayPosition / 9) * 1.8), y, offset, visitor.getFirst(), visitor.get(1), visitor.getLast(), event.getMouseX(), event.getMouseY());
+				offset++;
+			}	
+	        RenderHelper.enableStandardItemLighting();
+		} catch (ConcurrentModificationException e) { // list is still being written to
+			return;
+		}
+	}
+
+	public static void addRequests(final GuiOpenEvent event, GuiChest chest, ContainerChest container) {
+		new Thread() {
+	        @Override
+	        public void run() {
+	        	try {
+	        		Thread.sleep(10);
+	        		GuiChest chest = (GuiChest) event.gui;
+					ContainerChest container = (ContainerChest) chest.inventorySlots;
+					if (!Visitor.addVisitor(event, container, chest)) {
+						LinkedList<LinkedList<String>> visitorList = Visitor.getVisitorList();
+					}
+	        	} catch (InterruptedException e) {
+	        		e.printStackTrace();
+	        	}
+	         }
+		}.start();		
+		
 	}	
 }
