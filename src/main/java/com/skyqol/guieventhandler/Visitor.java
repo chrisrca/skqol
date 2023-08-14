@@ -4,8 +4,12 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.skyqol.utils;
 
@@ -16,6 +20,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.enchantment.Enchantment;
+import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.IInventory;
@@ -28,6 +33,83 @@ import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.fml.client.config.GuiUtils;
 
 public class Visitor {
+	
+    private static HashMap<String, ItemStack> itemMappings = new HashMap<String, ItemStack>() {{
+    // Wheat:
+    	put("Wheat", new ItemStack(Items.wheat, 1, 0));
+    	put("Bread", new ItemStack(Items.bread, 1, 0));
+    	put("Hay Bale", new ItemStack(Item.getItemFromBlock(Blocks.hay_block), 1, 0));
+    	put("Enchanted Bread", new ItemStack(Items.bread, 1, 0));
+    	put("Enchanted Hay Bale", new ItemStack(Item.getItemFromBlock(Blocks.hay_block), 1, 0));
+    	// Tightly-Tied Hay Bale
+    // Carrot
+    	put("Carrot", new ItemStack(Items.carrot, 1, 0));
+    	put("Golden Carrot", new ItemStack(Items.golden_carrot, 1, 0));
+    	put("Enchanted Carrot", new ItemStack(Items.carrot, 1, 0));
+    	put("Enchanted Golden Carrot", new ItemStack(Items.golden_carrot, 1, 0));
+    // Potato
+    	put("Potato", new ItemStack(Items.potato, 1, 0));
+    	put("Enchanted Potato", new ItemStack(Items.potato, 1, 0));
+    	put("Enchanted Baked Potato", new ItemStack(Items.baked_potato, 1, 0));
+    // Pumpkin
+    	put("Pumpkin", new ItemStack(Item.getItemFromBlock(Blocks.pumpkin), 1, 0));
+    	put("Enchanted Pumpkin", new ItemStack(Item.getItemFromBlock(Blocks.pumpkin), 1, 0));
+    	// Polished Pumpkin
+    // Sugar Cane
+    	put("Sugar Cane", new ItemStack(Items.reeds, 1, 0));
+    	put("Enchanted Sugar", new ItemStack(Items.sugar, 1, 0));
+    	put("Enchanted Sugar Cane", new ItemStack(Items.reeds, 1, 0));
+    // Melon
+    	put("Melon", new ItemStack(Items.melon, 1, 0));
+    	put("Enchanted Melon", new ItemStack(Items.melon, 1, 0));
+    	put("Enchanted Melon Block", new ItemStack(Item.getItemFromBlock(Blocks.melon_block), 1, 0));
+    // Cactus
+    	put("Cactus", new ItemStack(Item.getItemFromBlock(Blocks.cactus), 1, 0));
+    	put("Enchanted Cactus Green", new ItemStack(Items.dye, 1, 2));
+    	put("Enchanted Cactus", new ItemStack(Item.getItemFromBlock(Blocks.cactus), 1, 0));
+    // Cocoa Beans
+    	put("Cocoa Beans", new ItemStack(Items.dye, 1, 3));
+    	put("Enchanted Cocoa Beans", new ItemStack(Items.dye, 1, 3));
+    	put("Enchanted Cookie", new ItemStack(Items.cookie, 1, 0));
+    // Mushrooms
+    	put("Brown Mushroom", new ItemStack(Item.getItemFromBlock(Blocks.brown_mushroom), 1, 0));
+    	put("Red Mushroom", new ItemStack(Item.getItemFromBlock(Blocks.red_mushroom), 1, 0));
+    	put("Enchanted Brown Mushroom", new ItemStack(Item.getItemFromBlock(Blocks.brown_mushroom), 1, 0));
+    	put("Enchanted Red Mushroom", new ItemStack(Item.getItemFromBlock(Blocks.red_mushroom), 1, 0));
+    	put("Enchanted Brown Mushroom Block", new ItemStack(Item.getItemFromBlock(Blocks.brown_mushroom_block), 1, 0));
+    	put("Enchanted Red Mushroom Block", new ItemStack(Item.getItemFromBlock(Blocks.red_mushroom_block), 1, 0));
+    // Nether Wart
+    	put("Nether Wart", new ItemStack(Items.nether_wart, 1, 0));
+    	put("Enchanted Nether Wart", new ItemStack(Items.nether_wart, 1, 0));
+    	// Mutant Nether Wart
+    // Seeds
+    	put("Seeds", new ItemStack(Items.wheat_seeds, 1, 0));
+    	put("Enchanted Seeds", new ItemStack(Items.wheat_seeds, 1, 0));
+    // Egg
+    	put("Egg", new ItemStack(Items.egg, 1, 0));
+    	put("Enchanted Egg", new ItemStack(Items.egg, 1, 0));
+    	put("Super Enchanted Egg", new ItemStack(Items.spawn_egg, 1, 0));
+    // Raw Mutton
+    	put("Raw Mutton", new ItemStack(Items.mutton, 1, 0));
+    	put("Enchanted Mutton", new ItemStack(Items.mutton, 1, 0));
+    	put("Enchanted Cooked Mutton", new ItemStack(Items.cooked_mutton, 1, 0));
+    // Raw Porkchop
+    	put("Raw Porkchop", new ItemStack(Items.porkchop, 1, 0));
+    	put("Enchanted Pork", new ItemStack(Items.porkchop, 1, 0));
+    	put("Enchanted Grilled Pork", new ItemStack(Items.cooked_porkchop, 1, 0));
+    // Raw Rabbit
+    	put("Raw Rabbit", new ItemStack(Items.rabbit, 1, 0));
+    	put("Enchanted Raw Rabbit", new ItemStack(Items.rabbit, 1, 0));
+    // Wool
+    	put("Wool", new ItemStack(Item.getItemFromBlock(Blocks.wool), 1, 0));
+    	put("Enchanted Wool", new ItemStack(Item.getItemFromBlock(Blocks.wool), 1, 0));
+    // Compost
+    	// Compost
+    // Jack o' Lantern
+    	put("Jack o' Lantern", new ItemStack(Item.getItemFromBlock(Blocks.lit_pumpkin), 1, 0));
+    // Milk Bucket
+    	put("Milk Bucket", new ItemStack(Items.milk_bucket, 1, 0));
+    }};
 	
 	final static String[] visitorNameList = {"Adventurer", "Alchemist", "Andrew", "Anita", "Arthur", "Banker Broadjaw", "Bartender", "Beth", "Clerk Seraphine", "Dalbrek", "Duke", "Dusk", "Emissary Carlton", "Emissary Ceanna" , "Emissary Fraiser", "Emissary Sisko", "Emissary Wilson", "Farmer Jon", "Farmhand", "Fear Mongerer", "Felix", "Fisherman", "Fragilis", "Friendly Hiker", "Geonathan Greatforge", "Gimley", "Gold Forger", "Grandma Wolf", "Guy", "Gwendolyn", "Hornum", "Hungry Hiker", "Iron Forger", "Jack", "Jacob", "Jamie", "Jerry", "Jotraeline Greatforge", "Lazy Miner", "Leo", "Liam", "Librarian", "Lumberjack", "Lumina", "Lynn", "Madame Eleanor Q. Goldsworth III", "Mason", "Odawa", "Old Man Garry", "Oringo", "Pete", "Plumber Joe", "Puzzler", "Queen Mismyla", "Rhys", "Royal Resident", "Royal Resident (Neighbor)", "Royal Resident (Snooty)", "Rusty", "Ryu", "Sargwyn", "Seymour", "Shaggy", "Shifty", "Sirius", "Spaceman", "Stella", "Tammy", "Tarwen", "Terry", "Tia the Fairy", "Tom", "Trevor", "Vex", "Weaponsmith", "Wizard", "Xalx", "Zog"};
 	final static char[] visitorRarity = {'U', 'U', 'U', 'U', 'U', 'R', 'R', 'L', 'L', 'R', 'U', 'U', 'U', 'U', 'U', 'R', 'U', 'U', 'U', 'U', 'U', 'U', 'R', 'U', 'U', 'U', 'R', 'R', 'U', 'R', 'U', 'U', 'R', 'U', 'U', 'U', 'L', 'U', 'R', 'U', 'U', 'U', 'U', 'R', 'U', 'L', 'U', 'U', 'R', 'U', 'R', 'U', 'R', 'R', 'U', 'R', 'U', 'U', 'R', 'U', 'U', 'R', 'U', 'R', 'L', 'S', 'U', 'R', 'U', 'U', 'R', 'U', 'U', 'U', 'U', 'U', 'U', 'R'};
@@ -133,19 +215,31 @@ public class Visitor {
         } else {
         	chest.drawModalRectWithCustomSizedTexture(x, y + offset + 1, 0, 0, 30, 30, 30, 30);
         }
-        if (file.contains("Madame Eleanor")) {
-        	name = "\u00A76Madame Eleanor";
-        	file = "\u00A76Madame Eleanor";
-        } else if (file.contains("Royal Resident (")) {
-        	name = "\u00A7aRoyal Resident";
-        	file = "\u00A7aRoyal Resident";
-        }
         
         String requestRaw = utils.cleanColor(utils.cleanDuplicateColors(request));
-        RenderItem itemRender = Minecraft.getMinecraft().getRenderItem();
-        ItemStack requestedItem = new ItemStack((Items.potato), 1, 0);
-        requestedItem.addEnchantment(Enchantment.unbreaking, 1);
-        itemRender.renderItemAndEffectIntoGUI(requestedItem, x+27, y+11 + offset);  
+
+        Pattern pattern = Pattern.compile("x[0-9]+$");
+        Matcher matcher = pattern.matcher(requestRaw);
+        if (matcher.find()) {
+        	requestRaw = requestRaw.substring(1, matcher.start() - 1);
+        } else {
+        	requestRaw = requestRaw.substring(1);
+        }
+        
+        if (requestRaw.equals("Tightly-Tied Hay Bale") || requestRaw.equals("Compost") || requestRaw.equals("Polished Pumpkin") || requestRaw.equals("Mutant Nether Wart")) {
+            ResourceLocation HAY_TEXTURE = new ResourceLocation("skyqol", ("garden/" + requestRaw + ".png"));
+            Minecraft.getMinecraft().getTextureManager().bindTexture(HAY_TEXTURE);
+            chest.drawModalRectWithCustomSizedTexture(x+30, y+12 + offset, 0, 0, 16, 16, 16, 16);
+        } else {
+        	RenderItem itemRender = Minecraft.getMinecraft().getRenderItem();
+            ItemStack requestedItem = itemMappings.get(requestRaw);
+            if (requestRaw.contains("Enchanted")) {
+                requestedItem.addEnchantment(Enchantment.unbreaking, 1);
+            }
+            RenderHelper.enableGUIStandardItemLighting();
+            itemRender.renderItemAndEffectIntoGUI(requestedItem, x+30, y+12 + offset);
+            RenderHelper.disableStandardItemLighting();
+        }
 	}	
 	
 	public static void drawTooltips(GuiChest chest, int x, int y, int offset, String name, String request, String file, int mouseX, int mouseY) {
@@ -196,6 +290,13 @@ public class Visitor {
 
 	public static void drawText(GuiChest chest, int x, int y, int offset, String name, String request, String file, int mouseX, int mouseY) {
 		offset *= 33;
+        if (file.contains("Madame Eleanor")) {
+        	name = "\u00A76Madame Eleanor";
+        	file = "\u00A76Madame Eleanor";
+        } else if (file.contains("Royal Resident (")) {
+        	name = "\u00A7aRoyal Resident";
+        	file = "\u00A7aRoyal Resident";
+        }
         String requestAmount = "";
         if ((utils.cleanColor(utils.cleanDuplicateColors(request))).lastIndexOf('x') > 0) {
             requestAmount = (utils.cleanColor(utils.cleanDuplicateColors(request))).substring((utils.cleanColor(utils.cleanDuplicateColors(request))).lastIndexOf('x'));
@@ -214,9 +315,9 @@ public class Visitor {
         	shadow = 0x3f1515;
         } 
   
-        drawScaledString((utils.cleanColor(utils.cleanDuplicateColors(name))), x+27.2F, y+7.4F + offset, 0.75F, shadow);
-        drawScaledString(name, x+27, y+7 + offset, 0.75F, 0x3f3f3f);
-        drawScaledString(requestAmount, x+45F, y+18.4F + offset, 0.75F, 0x151515);
-        drawScaledString(requestAmount, x+44, y+18 + offset, 0.75F, 0x555555);
+        drawScaledString((utils.cleanColor(utils.cleanDuplicateColors(name))), x+30.5F, y+6F + offset, 0.75F, shadow);
+        drawScaledString(name, x+30, y+5 + offset, 0.75F, 0x3f3f3f);
+        drawScaledString(requestAmount, x+48F, y+18F + offset, 0.75F, 0x151515);
+        drawScaledString(requestAmount, x+47, y+17 + offset, 0.75F, 0x555555);
 	}	
 }

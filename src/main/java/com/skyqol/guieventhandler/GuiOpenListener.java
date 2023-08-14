@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -21,6 +22,7 @@ import net.minecraft.init.Items;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.ContainerChest;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemSkull;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.scoreboard.Scoreboard;
@@ -85,8 +87,8 @@ public class GuiOpenListener {
 				int x = utils.getGuiWidth(chestContainer, chest);
 				int y = utils.getGuiHeight(chestContainer, chest);
 				
-				Slot slot = chestContainer.getSlot(1);						
-				utils.drawItemStack(chest, new ItemStack(Item.getItemFromBlock(Blocks.stained_glass_pane), 1, 5), slot, x + slot.xDisplayPosition, y + slot.yDisplayPosition);
+//				Slot slot = chestContainer.getSlot(1);						
+//				utils.drawItemStack(chest, new ItemStack(Item.getItemFromBlock(Blocks.stained_glass_pane), 1, 5), slot, x + slot.xDisplayPosition, y + slot.yDisplayPosition);
 			}
 		}
 	}
@@ -100,9 +102,13 @@ public class GuiOpenListener {
 			if (container instanceof ContainerChest) {
 				ContainerChest chestContainer = (ContainerChest) container;
 				 // Get Gui Width and Height (This is necessary for rendering items in right locations with any scale game)
+								
 				int x = utils.getGuiWidth(chestContainer, chest);
 				int y = utils.getGuiHeight(chestContainer, chest);
 				Slot slot = chestContainer.getSlot(8);		
+				
+
+				
 				int offset = 0;
 				try {
 					RenderHelper.disableStandardItemLighting();
@@ -121,9 +127,8 @@ public class GuiOpenListener {
 						Visitor.drawTooltips(chest, (int) (x + slot.xDisplayPosition + (slot.xDisplayPosition / 9) * 1.8), y, offset, visitor.getFirst(), visitor.get(1), visitor.getLast(), event.getMouseX(), event.getMouseY());
 						offset++;
 					}	
-			        RenderHelper.enableGUIStandardItemLighting();
-				} catch (ConcurrentModificationException e) { // Just in case the list is still being written to
-					utils.log("that error happened :/");
+			        RenderHelper.enableStandardItemLighting();
+				} catch (ConcurrentModificationException e) { // list is still being written to
 					return;
 				}
 			}
