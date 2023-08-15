@@ -87,6 +87,10 @@ public class GuiOpenListener {
 				int x = utils.getGuiWidth(chestContainer, chest);
 				int y = utils.getGuiHeight(chestContainer, chest);
 				
+				if ((utils.getLocation()).contains("The Garden")) {
+					Visitor.highlightBazaar(event, chest, container, chestContainer, x, y);
+				}
+				
 //				Slot slot = chestContainer.getSlot(1);						
 //				utils.drawItemStack(chest, new ItemStack(Item.getItemFromBlock(Blocks.stained_glass_pane), 1, 5), slot, x + slot.xDisplayPosition, y + slot.yDisplayPosition);
 			}

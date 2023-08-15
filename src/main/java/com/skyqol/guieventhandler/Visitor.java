@@ -3,9 +3,11 @@ package com.skyqol.guieventhandler;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -40,10 +42,83 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.client.event.GuiScreenEvent.BackgroundDrawnEvent;
+import net.minecraftforge.client.event.GuiScreenEvent.DrawScreenEvent.Pre;
 import net.minecraftforge.fml.client.config.GuiUtils;
 
 public class Visitor {
-	
+    private static HashMap<String, String> bazaarMappings = new HashMap<String, String>() {{
+    // Wheat:
+    	put("Wheat", "Wheat & Seeds");
+    	put("Bread", "Wheat & Seeds");
+    	put("Hay Bale", "Wheat & Seeds");
+    	put("Enchanted Bread", "Wheat & Seeds");
+    	put("Enchanted Hay Bale", "Wheat & Seeds");
+    	put("Tightly-Tied Hay Bale", "Wheat & Seeds");
+    // Carrot
+    	put("Carrot", "Carrot");
+    	put("Golden Carrot", "Carrot");
+    	put("Enchanted Carrot", "Carrot");
+    	put("Enchanted Golden Carrot", "Carrot");
+    // Potato
+    	put("Potato", "Potato");
+    	put("Enchanted Potato", "Potato");
+    	put("Enchanted Baked Potato", "Potato");
+    // Pumpkin
+    	put("Pumpkin", "Pumpkin");
+    	put("Enchanted Pumpkin", "Pumpkin");
+    	put("Polished Pumpkin", "Pumpkin");
+    // Sugar Cane
+    	put("Sugar", "Sugar Cane");
+    	put("Sugar Cane", "Sugar Cane");
+    	put("Enchanted Sugar", "Sugar Cane");
+    	put("Enchanted Sugar Cane", "Sugar Cane");
+    // Melon
+    	put("Melon", "Melon");
+    	put("Enchanted Melon", "Melon");
+    	put("Enchanted Melon Block", "Melon");
+    // Cactus
+    	put("Cactus", "Cactus");
+    	put("Enchanted Cactus Green", "Cactus");
+    	put("Enchanted Cactus", "Cactus");
+    // Cocoa Beans
+    	put("Cocoa Beans", "Cocoa Beans");
+    	put("Enchanted Cocoa Beans", "Cocoa Beans");
+    	put("Enchanted Cookie", "Cocoa Beans");
+    // Mushrooms
+    	put("Brown Mushroom", "Mushrooms");
+    	put("Red Mushroom", "Mushrooms");
+    	put("Enchanted Brown Mushroom", "Mushrooms");
+    	put("Enchanted Red Mushroom", "Mushrooms");
+    	put("Enchanted Brown Mushroom Block", "Mushrooms");
+    	put("Enchanted Red Mushroom Block", "Mushrooms");
+    // Nether Wart
+    	put("Nether Wart", "Nether Warts");
+    	put("Enchanted Nether Wart", "Nether Warts");
+    	put("Mutant Nether Wart", "Nether Warts");
+    // Seeds
+    	put("Seeds", "Wheat & Seeds");
+    	put("Enchanted Seeds", "Wheat & Seeds");
+    // Egg
+    	put("Egg", "Chicken & Feather");
+    	put("Enchanted Egg", "Chicken & Feather");
+    	put("Super Enchanted Egg", "Chicken & Feather");
+    // Raw Mutton
+    	put("Mutton", "Mutton & Wool");
+    	put("Enchanted Mutton", "Mutton & Wool");
+    	put("Enchanted Cooked Mutton", "Mutton & Wool");
+    // Raw Porkchop
+    	put("Raw Porkchop", "Pork");
+    	put("Enchanted Pork", "Pork");
+    	put("Enchanted Grilled Pork", "Pork");
+    // Raw Rabbit
+    	put("Raw Rabbit", "Rabbit");
+    	put("Enchanted Raw Rabbit", "Rabbit");
+    // Wool
+    	put("Wool", "Mutton & Wool");
+    	put("Enchanted Wool", "Mutton & Wool");
+    // Compost
+    	put("Compost", "Compost");
+    }};
     private static HashMap<String, ItemStack> itemMappings = new HashMap<String, ItemStack>() {{
     // Wheat:
     	put("Wheat", new ItemStack(Items.wheat, 1, 0));
@@ -66,6 +141,7 @@ public class Visitor {
     	put("Enchanted Pumpkin", new ItemStack(Item.getItemFromBlock(Blocks.pumpkin), 1, 0));
     	// Polished Pumpkin
     // Sugar Cane
+    	put("Sugar", new ItemStack(Items.sugar, 1, 0));
     	put("Sugar Cane", new ItemStack(Items.reeds, 1, 0));
     	put("Enchanted Sugar", new ItemStack(Items.sugar, 1, 0));
     	put("Enchanted Sugar Cane", new ItemStack(Items.reeds, 1, 0));
@@ -100,7 +176,7 @@ public class Visitor {
     	put("Enchanted Egg", new ItemStack(Items.egg, 1, 0));
     	put("Super Enchanted Egg", new ItemStack(Items.spawn_egg, 1, 0));
     // Raw Mutton
-    	put("Raw Mutton", new ItemStack(Items.mutton, 1, 0));
+    	put("Mutton", new ItemStack(Items.mutton, 1, 0));
     	put("Enchanted Mutton", new ItemStack(Items.mutton, 1, 0));
     	put("Enchanted Cooked Mutton", new ItemStack(Items.cooked_mutton, 1, 0));
     // Raw Porkchop
@@ -120,7 +196,7 @@ public class Visitor {
     // Milk Bucket
     	put("Milk Bucket", new ItemStack(Items.milk_bucket, 1, 0));
     }};
-	
+	  
 	final static String[] visitorNameList = {"Adventurer", "Alchemist", "Andrew", "Anita", "Arthur", "Banker Broadjaw", "Bartender", "Beth", "Clerk Seraphine", "Dalbrek", "Duke", "Dusk", "Emissary Carlton", "Emissary Ceanna" , "Emissary Fraiser", "Emissary Sisko", "Emissary Wilson", "Farmer Jon", "Farmhand", "Fear Mongerer", "Felix", "Fisherman", "Fragilis", "Friendly Hiker", "Geonathan Greatforge", "Gimley", "Gold Forger", "Grandma Wolf", "Guy", "Gwendolyn", "Hornum", "Hungry Hiker", "Iron Forger", "Jack", "Jacob", "Jamie", "Jerry", "Jotraeline Greatforge", "Lazy Miner", "Leo", "Liam", "Librarian", "Lumberjack", "Lumina", "Lynn", "Madame Eleanor Q. Goldsworth III", "Mason", "Odawa", "Old Man Garry", "Oringo", "Pete", "Plumber Joe", "Puzzler", "Queen Mismyla", "Rhys", "Royal Resident", "Royal Resident (Neighbor)", "Royal Resident (Snooty)", "Rusty", "Ryu", "Sargwyn", "Seymour", "Shaggy", "Shifty", "Sirius", "Spaceman", "Stella", "Tammy", "Tarwen", "Terry", "Tia the Fairy", "Tom", "Trevor", "Vex", "Weaponsmith", "Wizard", "Xalx", "Zog"};
 	final static char[] visitorRarity = {'U', 'U', 'U', 'U', 'U', 'R', 'R', 'L', 'L', 'R', 'U', 'U', 'U', 'U', 'U', 'R', 'U', 'U', 'U', 'U', 'U', 'U', 'R', 'U', 'U', 'U', 'R', 'R', 'U', 'R', 'U', 'U', 'R', 'U', 'U', 'U', 'L', 'U', 'R', 'U', 'U', 'U', 'U', 'R', 'U', 'L', 'U', 'U', 'R', 'U', 'R', 'U', 'R', 'R', 'U', 'R', 'U', 'U', 'R', 'U', 'U', 'R', 'U', 'R', 'L', 'S', 'U', 'R', 'U', 'U', 'R', 'U', 'U', 'U', 'U', 'U', 'U', 'R'};
 	
@@ -224,10 +300,10 @@ public class Visitor {
         ResourceLocation HEAD_TEXTURE = new ResourceLocation("skyqol", ("garden/" + (utils.cleanColor(utils.cleanDuplicateColors(name))) + ".png"));
         Minecraft.getMinecraft().getTextureManager().bindTexture(HEAD_TEXTURE);
     
-        if (file.contains("Alchemist")) {
-        	chest.drawModalRectWithCustomSizedTexture(x + 4, y + offset + 9, 0, 0, 22, 22, 22, 22);
-        } else {
+        if ((utils.cleanColor(utils.cleanDuplicateColors(name))).contains("Alchemist")) {
         	chest.drawModalRectWithCustomSizedTexture(x, y + offset + 1, 0, 0, 30, 30, 30, 30);
+        } else {
+        	chest.drawModalRectWithCustomSizedTexture(x + 4, y + offset + 6, 0, 0, 22, 22, 22, 22);
         }
         
         String requestRaw = utils.cleanColor(utils.cleanDuplicateColors(request));
@@ -248,7 +324,12 @@ public class Visitor {
         	RenderItem itemRender = Minecraft.getMinecraft().getRenderItem();
             ItemStack requestedItem = itemMappings.get(requestRaw);
             
-            if (requestedItem == null) return;
+            if (requestedItem == null) {
+                ResourceLocation NULL_TEXTURE = new ResourceLocation("skyqol", ("garden/null.png"));
+                Minecraft.getMinecraft().getTextureManager().bindTexture(NULL_TEXTURE);
+                chest.drawModalRectWithCustomSizedTexture(x+30, y+12 + offset, 0, 0, 16, 16, 16, 16);
+            	return;
+            }
             
             if (requestRaw.contains("Enchanted")) {
                 requestedItem.addEnchantment(Enchantment.unbreaking, 1);
@@ -409,4 +490,67 @@ public class Visitor {
 			skyqol.sendChatMessage(command);
         }
 	}
+
+	public static void highlightBazaar(Pre event, GuiChest chest, Container container, ContainerChest chestContainer, int x, int y) {
+		ArrayList<Integer> slots = new ArrayList<>();
+		try {
+			for (int i = 0; i < (chestContainer.getLowerChestInventory().getSizeInventory()); i++) {
+		    	Slot slot = chestContainer.getSlot(i);
+		    	if (slot != null) {
+		    		ItemStack stack = slot.getStack();
+		    		if (stack != null) {
+		    			try {
+			    			for (LinkedList<String> visitor : visitorList) {    				
+			    		        String requestRaw = utils.cleanColor(utils.cleanDuplicateColors(visitor.getLast()));
+
+			    		        Pattern pattern = Pattern.compile("x[0-9]+$");
+			    		        Matcher matcher = pattern.matcher(requestRaw);
+			    		        if (matcher.find()) {
+			    		        	requestRaw = requestRaw.substring(0, matcher.start() - 1);
+			    		        } else {
+			    		        	requestRaw = requestRaw.substring(0);
+			    		        }
+			    		        if (bazaarMappings.get(requestRaw).equals(utils.cleanColor(utils.cleanDuplicateColors(stack.getDisplayName())))) {
+			    		        	List<String> tooltipLines = stack.getTooltip(null, false);
+			    			    	for (int j = 0; j < tooltipLines.size(); j++) {
+			    			    		if (i > 0 && utils.cleanColor(utils.cleanDuplicateColors(tooltipLines.get(j))).contains("products")) {
+			    			    			slots.add(i);
+			    			    		}
+			    			    	}
+			    		        } 
+			    		        if (requestRaw.equals(utils.cleanColor(utils.cleanDuplicateColors(stack.getDisplayName())))) {
+			    		        	slots.add(i);
+			    		        }
+			    			}	
+		    			} catch (ConcurrentModificationException e) {
+		    			    e.printStackTrace();
+		    			}
+		    		}
+		    	}
+		    }
+			ArrayList<Integer> slotsND = removeDuplicates(slots);
+			for (Integer s : slotsND) {
+				Slot slot = chestContainer.getSlot(s);
+	        	utils.drawItemStack(chest, new ItemStack(Item.getItemFromBlock(Blocks.stained_glass_pane), 1, 0), slot, x + slot.xDisplayPosition, y + slot.yDisplayPosition);
+			}
+			
+		} catch (NullPointerException e) {
+    		e.printStackTrace();
+    	}
+	    
+	}
+	
+    public static <T> ArrayList<T> removeDuplicates(ArrayList<T> list) {
+        HashSet<T> set = new HashSet<>();
+        ArrayList<T> result = new ArrayList<>();
+
+        for (T item : list) {
+            if (set.add(item)) {
+                result.add(item);
+            }
+        }
+
+        return result;
+    }
+	
 }
