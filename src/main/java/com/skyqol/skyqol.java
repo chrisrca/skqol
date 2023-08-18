@@ -4,6 +4,8 @@ import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.ServerChatEvent;
+import net.minecraftforge.fml.client.registry.IRenderFactory;
+import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -14,15 +16,21 @@ import java.awt.Container;
 
 import com.skyqol.chateventhandler.ChatEventListener;
 import com.skyqol.commands.Commands;
+import com.skyqol.entityrenderer.skins.SkinEvents;
+import com.skyqol.entityrenderer.skins.SkinManager;
 import com.skyqol.guieventhandler.GuiOpenListener;
 import com.skyqol.guieventhandler.MouseListener;
 import com.skyqol.guieventhandler.SignOpenListener;
 import com.skyqol.worldeventhandler.WorldListener;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.AbstractClientPlayer;
+import net.minecraft.client.entity.EntityOtherPlayerMP;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.client.renderer.entity.RenderPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.InventoryBasic;
@@ -40,6 +48,8 @@ public class skyqol
 	public static final String NAME = "skyqol";
     public static final String MODID = "skyqol";
     public static final String VERSION = "1.0";
+    
+    public static SkinManager skinManager;
     
     private static final long CHAT_MSG_COOLDOWN = 200;
 
@@ -60,8 +70,13 @@ public class skyqol
     	MinecraftForge.EVENT_BUS.register(new ChatEventListener());
     	MinecraftForge.EVENT_BUS.register(new SignOpenListener());
     	MinecraftForge.EVENT_BUS.register(new MouseListener());
-    	
     	this.commands = new Commands();
+    	skinManager = new SkinManager();
+    }
+    
+    @EventHandler
+    public void init(FMLInitializationEvent event) {
+    	MinecraftForge.EVENT_BUS.register(new SkinEvents());
     }
 
     public void trySendCommand(String message) {
