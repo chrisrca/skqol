@@ -2,7 +2,9 @@ package com.skyqol.chateventhandler;
 
 import java.util.LinkedList;
 
+import com.skyqol.skyqol;
 import com.skyqol.utils;
+import com.skyqol.entityrenderer.skins.SkinEvents;
 import com.skyqol.guieventhandler.Visitor;
 
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
@@ -16,7 +18,7 @@ public class ChatEventListener {
         chatMessage = utils.cleanDuplicateColors(chatMessage);
         chatMessage = utils.cleanColor(chatMessage);
         if ((utils.getLocation()).contains("The Garden")) { 
-        	if (chatMessage.contains("ACCEPTED")) {
+        	if (chatMessage.startsWith("OFFER ACCEPTED")) {
 				LinkedList<LinkedList<String>> visitorList = Visitor.getVisitorList();
 				for (LinkedList<String> visitor : visitorList) {
 					if (chatMessage.contains(utils.cleanColor(utils.cleanDuplicateColors(visitor.getFirst())))) {
@@ -24,7 +26,11 @@ public class ChatEventListener {
 						break;
 					}
 			    }
-        	}        
+        	}   
+        }
+        if (chatMessage.startsWith("[NPC] Bazaar")) {
+        	event.setCanceled(true);
+        	skyqol.sendChatMessage("/bz");
         }
     }
 }

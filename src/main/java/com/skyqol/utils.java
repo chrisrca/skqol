@@ -127,13 +127,53 @@ public class utils {
 		Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("" + str));
 	}
 	
+	public static boolean isRealPlayer(String unformattedText) {
+		unformattedText = "] " + unformattedText;
+		GuiPlayerTabOverlay tabOverlay  = Minecraft.getMinecraft().ingameGUI.getTabList();
+	    Scoreboard scoreboard = Minecraft.getMinecraft().theWorld.getScoreboard();
+	    Collection<ScorePlayerTeam> teams = scoreboard.getTeams();
+	    for (ScorePlayerTeam team : teams) {
+	    	if (team.getRegisteredName().contains(unformattedText)) {
+	    		return true;
+	    	}
+	        Team.EnumVisible visibility = team.getNameTagVisibility();
+	        if (visibility == Team.EnumVisible.ALWAYS || visibility == Team.EnumVisible.HIDE_FOR_OTHER_TEAMS) {
+	            Collection<String> players = team.getMembershipCollection();
+	            for (String playerName : players) {
+	                ChatComponentText playerNameComponent = new ChatComponentText(playerName);
+	                String playerNameFormatted = playerNameComponent.getFormattedText();
+	                String teamPrefix = EnumChatFormatting.getTextWithoutFormattingCodes(team.getColorPrefix());
+	                String formattedPlayerInfo = teamPrefix + playerNameFormatted;
+	                if (formattedPlayerInfo.contains(unformattedText)) {
+	                	return true;
+	                }               
+	            }
+	        }
+	    }    
+	    return false;
+	}
+	
+	public static void writeFile(String text) {
+		try {
+        	BufferedWriter writer = new BufferedWriter(new FileWriter("C:\\Users\\goali\\AppData\\Roaming\\.minecraft\\mods\\out.txt"));
+        	writer.write(text);
+        	writer.newLine();
+        	writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+	}
+	
 //	public static void getTabList() {
 //		GuiPlayerTabOverlay tabOverlay  = Minecraft.getMinecraft().ingameGUI.getTabList();
 //        Scoreboard scoreboard = Minecraft.getMinecraft().theWorld.getScoreboard();
 //        Collection<ScorePlayerTeam> teams = scoreboard.getTeams();
-//
+//        try {
+//        	BufferedWriter writer = new BufferedWriter(new FileWriter("C:\\Users\\goali\\AppData\\Roaming\\.minecraft\\mods\\out.txt"));
 //        for (ScorePlayerTeam team : teams) {
 //        	utils.log(team.getRegisteredName());
+//        	writer.write(team.getRegisteredName() + "Visability: " + team.getNameTagVisibility());
+//            writer.newLine();
 //            Team.EnumVisible visibility = team.getNameTagVisibility();
 //            if (visibility == Team.EnumVisible.ALWAYS || visibility == Team.EnumVisible.HIDE_FOR_OTHER_TEAMS) {
 //                Collection<String> players = team.getMembershipCollection();
@@ -143,8 +183,19 @@ public class utils {
 //                    String teamPrefix = EnumChatFormatting.getTextWithoutFormattingCodes(team.getColorPrefix());
 //                    String formattedPlayerInfo = teamPrefix + playerNameFormatted;
 //                    utils.log(formattedPlayerInfo);
+//                        writer.write(formattedPlayerInfo);
+//                        writer.newLine();
+//                        // Close the writer
+//                        
+//
+//
 //                }
 //            }
 //        }
+//        writer.close();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        
 //	}
 }

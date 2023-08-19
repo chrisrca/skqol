@@ -72,6 +72,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.skyqol.utils;
+import com.skyqol.entityrenderer.skins.SkinEvents;
 
 public class GuiOpenListener {
 			
